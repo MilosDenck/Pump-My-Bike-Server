@@ -17,7 +17,7 @@ const Pump = sequelize.define('Pump', {
   description: {
     type: DataTypes.TEXT,
   },
-  openinghour: {
+  openingHours: {
     type: DataTypes.JSONB, // oder JSON
   },
   thumbnail: {

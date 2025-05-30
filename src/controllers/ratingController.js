@@ -13,11 +13,11 @@ export const createRating = asyncHandler(async (req, res) => {
     const userId = req.query.userid
 
     const pumpId = locationId
-    const newRating = await Rating.create({
-      rating,
-      comment,
-      userId,
-      pumpId,
+    const [newRating, created] = await Rating.upsert({
+        rating,
+        comment,
+        userId,
+        pumpId,
     });
 
     const averageRating = await Rating.findOne({
@@ -53,3 +53,4 @@ export const getRating = asyncHandler(async (req, res) => {
     res.status(500).send(err);
   }
 });
+

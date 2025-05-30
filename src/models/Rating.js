@@ -13,10 +13,20 @@ const Rating = sequelize.define('Rating', {
   userId: {
     type: DataTypes.STRING,
     allowNull: false,
-  }
+  },
+  pumpId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 }, {
   tableName: 'ratings',
   timestamps: false,
+  indexes: [
+    {
+      unique: true,
+      fields: ['userId', 'pumpId'],
+    },
+  ],
 });
 
 export default Rating;

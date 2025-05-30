@@ -9,9 +9,12 @@ const storage = multer.diskStorage({
     fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
-  filename: (req, file, cb) => {
+  filename:(req, file, cb) => {
     const id = file.originalname.split('.')[0];
-    cb(null, `${id}_${Date.now()}.jpg`);
+    const filename = `${id}_${Date.now()}.jpg`
+    req.generatedFilename = filename;
+    req.locationId = id;
+    cb(null, filename);
   }
 });
 

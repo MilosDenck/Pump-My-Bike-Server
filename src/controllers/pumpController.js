@@ -1,15 +1,16 @@
 import Pump from '../models/pump.js';
 import asyncHandler from 'express-async-handler';
 
-export const createPump = asyncHandler(async (req, res) => {
+export const createPump = asyncHandler(async (req, res, next) => {
   try {
     const pump = await Pump.create(req.body);
     console.log(pump)
-    res.json({ id: pump.id });
+    next()
   } catch (err) {
     console.error(err);
     res.status(500).send('error: saving not worked');
   }
+  
 });
 
 export const getPumps = asyncHandler(async (req, res) => {
@@ -37,4 +38,35 @@ export const updateOpeningHours = asyncHandler(async (req, res) => {
 
   res.sendStatus(200);
 });
+
+export const updateThumbnail = asyncHandler(async (req, res) => {
+
+  const updated = await Pump.update(
+    { thumbnail: req.generatedFilename }, 
+    { where: { id: req.locationId } }
+  );
+
+  if (updated[0] === 0) {
+    return res.status(404).json({ error: 'not found' });
+  }
+
+  res.sendStatus(200);
+});
+
+export const getImages = asyncHandler( async (req, res) => {
+    const id = req.query.id
+    console.log(id)
+    const directoryPath = path.join( "Images",id.toString())
+    console.log(directoryPath)
+    fs.readdir(directoryPath, (err, files) =>{
+        if(err){
+            console.log('kein dir gefunden')
+            send('directory not found')
+        }else{
+            console.log(files)
+            res.send(JSON.stringify(files))
+        }
+        
+    })
+})
 
