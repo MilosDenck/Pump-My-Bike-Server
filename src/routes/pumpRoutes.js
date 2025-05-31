@@ -15,7 +15,7 @@ router.all('*', (req, res, next) => {
     console.log(req.body)
     next()
 })
-router.post('/locations', createPump, getPumps);
+router.post('/locations', createPump);
 router.get('/locations', getPumps);
 router.post('/openinghours', updateOpeningHours);
 router.post('/images', upload.single('image'), updateThumbnail);

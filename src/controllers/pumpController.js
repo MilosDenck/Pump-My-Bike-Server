@@ -1,11 +1,12 @@
 import Pump from '../models/pump.js';
+import path from 'path';
+import fs from 'fs';
 import asyncHandler from 'express-async-handler';
 
-export const createPump = asyncHandler(async (req, res, next) => {
+export const createPump = asyncHandler(async (req, res) => {
   try {
     const pump = await Pump.create(req.body);
-    console.log(pump)
-    next()
+    res.send(pump)
   } catch (err) {
     console.error(err);
     res.status(500).send('error: saving not worked');
@@ -15,7 +16,6 @@ export const createPump = asyncHandler(async (req, res, next) => {
 
 export const getPumps = asyncHandler(async (req, res) => {
   try {
-    console.log("searched for pumps")
     const pumps = await Pump.findAll();
     res.json(pumps);
   } catch (err) {
@@ -57,13 +57,11 @@ export const getImages = asyncHandler( async (req, res) => {
     const id = req.query.id
     console.log(id)
     const directoryPath = path.join( "Images",id.toString())
-    console.log(directoryPath)
     fs.readdir(directoryPath, (err, files) =>{
         if(err){
             console.log('kein dir gefunden')
-            send('directory not found')
+            res.send('directory not found')
         }else{
-            console.log(files)
             res.send(JSON.stringify(files))
         }
         
