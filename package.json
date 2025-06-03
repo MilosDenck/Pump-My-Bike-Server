@@ -18,7 +18,8 @@
     "mysql2": "^3.6.1",
     "pg": "^8.16.0",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "supertokens-node": "^22.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
