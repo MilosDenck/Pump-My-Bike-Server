@@ -31,8 +31,7 @@ export const createRating = asyncHandler(async (req, res) => {
         { rating: averageRating.avgRating }, 
         { where: { id: locationId } }
     );
-
-    res.status(201).json({ id: newRating.id });
+    res.status(200).send(String(averageRating.avgRating));
   } catch (err) {
     console.error(err);
     res.status(500).send(err);

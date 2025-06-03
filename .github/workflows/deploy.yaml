@@ -1,0 +1,58 @@
+name: Docker Deploy on Tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name to deploy (optional override)'
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+          
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        env:
+          TAG: "${{ github.event.inputs.tag_name || github.ref_name }}"
+        run: docker build -t "${{ secrets.DOCKERHUB_USERNAME }}/pmb-backend:$TAG" .
+
+      - name: upload image to dockerhub
+        env:
+          TAG: "${{ github.event.inputs.tag_name || github.ref_name }}"
+        run: docker push "${{ secrets.DOCKERHUB_USERNAME }}/pmb-backend:$TAG"
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SSH_IP }} >> ~/.ssh/known_hosts
+
+      - name: Load and run container on server
+        uses: appleboy/ssh-action@v1
+        env:
+          TAG: "${{ github.event.inputs.tag_name || github.ref_name }}"
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
+          script: |         
+            export TAG="${{ github.event.inputs.tag_name || github.ref_name }}"
+            cd pmb
+            sed -i 's|image: mil05/pmb-backend:v[0-9.]\+|image: mil05/pmb-backend:$TAG|' docker-compose.yaml
+            docker-compose up --detach
