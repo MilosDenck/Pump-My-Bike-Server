@@ -51,8 +51,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
-          script: |         
-            export TAG="${{ github.event.inputs.tag_name || github.ref_name }}"
+          script: | 
             cd pmb
-            sed -i s|image: mil05/pmb-backend:v[0-9.]\+|image: mil05/pmb-backend:$TAG| docker-compose.yaml
+            sed -i 's|image: mil05/pmb-backend:v[0-9.]\+|image: mil05/pmb-backend:${{ github.event.inputs.tag_name || github.ref_name }}|' docker-compose.yaml
             docker-compose up --detach
