@@ -5,9 +5,25 @@ import asyncHandler from 'express-async-handler';
 import { literal } from 'sequelize';
 import sequelize from '../config/database.js';
 
+
+  
+
 export const createPump = asyncHandler(async (req, res) => {
+  const session = req.session;
+  const date = new Date()
+  const userId = session.getUserId();
+  const body = req.body
   try {
-    const pump = await Pump.create(req.body);
+    const pump = await Pump.create({
+      name: body.name,
+      lat: body.lat,
+      lon: body.lon,
+      description: body.description,
+      thumbnail: null,
+      createdFrom: userId,
+      openingHours: body.openingHours,
+      createdAt: date
+    });
     res.send(pump)
   } catch (err) {
     console.error(err);
@@ -19,29 +35,23 @@ export const createPump = asyncHandler(async (req, res) => {
 
 export const getPumps = asyncHandler(async (req, res) => {
   try {
-    console.log("TEst")
+
     const lat = parseFloat(req.query.lat);
     const lon = parseFloat(req.query.lon);
     const maxDistance = 5;
-    //const pumps = await Pump.findAll();
 
     if (isNaN(lat) || isNaN(lon)) {
       return res.status(400).json({ error: 'Latitude and longitude must be valid numbers.' });
     }
     const pumps = await sequelize.query(`
-          WITH pump_data AS (SELECT *, (111.3 * cos(radians(( lat + ${lat} ) / 2* 0.01745)) * (lon - ${lon})) AS dx , 111.3 * (lat - ${lat}) AS dy 
-          FROM pumps)
-          SELECT *
-          FROM pump_data
-          WHERE sqrt(power(dx,2) + power(dy,2)) < ${maxDistance}`)
-    //const pumps = sequelize.query(`SELECT *, (111.3 * cos(radians(( lat + ${lat} ) / 2* 0.01745)) * (lon - ${lon})) AS dx , 111.3 * (lat - ${lat}) AS dy FROM pumps having sqrt(power(dx,2) + power(dy,2)) < 100`)
-    // "SELECT *, (111.3 * cos(radians(( lat + ? ) / 2* 0.01745)) * (lon - ?))   AS dx , 111.3 * (lat - ?) AS dy FROM pumps having sqrt(power(dx,2) + power(dy,2)) < ?"
-    // const pumps = await Pump.findAll({
-    //   attributes: ['id', 'lat', 'lon', 'name'],
-    //   group: ['Pump.id'],
-    //   having: literal(`lat < 0`),
-    // });
-    console.log("Pumepen", pumps)
+        WITH pump_data AS 
+        (SELECT *, (111.3 * cos(radians(( lat + ${lat} ) / 2* 0.01745)) * (lon - ${lon})) AS dx , 111.3 * (lat - ${lat}) AS dy 
+        FROM pumps)
+        SELECT *
+        FROM pump_data
+        WHERE sqrt(power(dx,2) + power(dy,2)) < ${maxDistance}
+        `)
+
     res.json(pumps[0]);
   } catch (err) {
     console.log(err)
@@ -51,6 +61,7 @@ export const getPumps = asyncHandler(async (req, res) => {
 
 
 export const updateOpeningHours = asyncHandler(async (req, res) => {
+
   const pumpId = req.query.id; 
 
   const updated = await Pump.update(
@@ -80,14 +91,13 @@ export const updateThumbnail = asyncHandler(async (req, res) => {
 
 export const getImages = asyncHandler( async (req, res) => {
     const id = req.query.id
-    console.log(id)
     const directoryPath = path.join( "Images",id.toString())
     fs.readdir(directoryPath, (err, files) =>{
         if(err){
-            console.log('kein dir gefunden')
-            res.send('directory not found')
+            console.error('directiory not found')
+            res.status(404).send('directory not found')
         }else{
-            res.send(JSON.stringify(files))
+            res.status(200).send(JSON.stringify(files))
         }
         
     })

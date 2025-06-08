@@ -18,13 +18,20 @@ const Pump = sequelize.define('Pump', {
     type: DataTypes.TEXT,
   },
   openingHours: {
-    type: DataTypes.JSONB, // oder JSON
+    type: DataTypes.JSONB, 
   },
   thumbnail: {
     type: DataTypes.STRING,
   },
   rating: {
     type: DataTypes.FLOAT,
+  },
+  createdFrom: {
+    type: DataTypes.STRING,
+    //allowNull: false,
+  },
+  createdAt: {
+    type: DataTypes.DATE
   }
 }, {
   tableName: 'pumps',

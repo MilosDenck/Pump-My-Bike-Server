@@ -18,6 +18,10 @@ const Rating = sequelize.define('Rating', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  }
 }, {
   tableName: 'ratings',
   timestamps: false,
@@ -28,5 +32,12 @@ const Rating = sequelize.define('Rating', {
     },
   ],
 });
+
+Rating.associate = (models) => {
+    Rating.belongsTo(models.User, {
+      foreignKey: 'userId',
+      targetKey: 'userId',
+    });
+  };
 
 export default Rating;
