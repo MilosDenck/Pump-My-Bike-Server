@@ -30,7 +30,7 @@ export const initSuperToken = () => {
         appInfo: {
             appName: "Pump My Bike",
             apiDomain: process.env.BASE_URL,
-            websiteDomain: "http://localhost:3000",
+            websiteDomain: process.env.FRONTEND_BASE,
             apiBasePath: "/auth",
             websiteBasePath: "/auth",
         },
