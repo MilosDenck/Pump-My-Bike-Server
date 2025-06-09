@@ -14,7 +14,7 @@ import pkg from 'supertokens-node';
 const { RecipeUserId } = pkg;
 
 export const createUser = async (username, email, userid) => {
- 
+    console.log(userid)
     try{
         const exists = await User.findOne({
             where: {
@@ -28,7 +28,7 @@ export const createUser = async (username, email, userid) => {
             return
         }
         const timestamp = new Date()
-        const user = await User.create({username: username, role: "User", email: email, superTokensID: userid, createdAt: timestamp.toUTCString()})
+        const user = await User.create({username: username, role: "User", email: email, userId: userid, createdAt: timestamp.toUTCString()})
 
     }catch(err){
         console.error(err)

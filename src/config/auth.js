@@ -59,6 +59,7 @@ export const initSuperToken = () => {
                                     const username = usernameField?.value ?? "";
 
                                     const email = emailField?.value ?? "";
+                                    console.log(response.user.id)
                                     await createUser(username, email, id )
                                 }
                                 return response;
