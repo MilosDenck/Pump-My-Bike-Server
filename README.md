@@ -44,7 +44,7 @@ This project can be easily set up for local development using Docker Compose.
     ```
 
 2.  **Environment Configuration:**
-    * Create `backend.env`, `db-backend.env` and `db-supertokens.env` file in the root directory if you haven't already. This file is used by Docker Compose to set environment variables for your services.
+    Create `backend.env`, `db-backend.env` and `db-supertokens.env` file in the root directory if you haven't already. This file is used by Docker Compose to set environment variables for your services.
     `backend.env:`
     ```
     DB_HOST=postgres
