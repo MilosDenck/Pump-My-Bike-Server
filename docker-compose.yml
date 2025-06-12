@@ -1,0 +1,65 @@
+services:
+  backend:
+    image: mil05/pmb-backend:v0.2.4
+    container_name: pmb_backend
+    restart: always
+    env_file: "backend.env"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - pump_my_bike
+    volumes:
+      - ./Images:/app/Images
+
+  email_verfication:
+    image: mil05/email-verification:v0.1.5
+    container_name: email-verfication
+    ports:
+      - "6666:80"
+    networks:
+      - pump_my_bike
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: always
+    env_file: "db-backend.env"
+    networks:
+      - pump_my_bike
+    volumes:
+      - ./data:/var/lib/postgresql/data
+  supertokens-db:
+    image: 'postgres:latest'
+    env_file: "db-supertokens.env"
+    networks:
+      - pump_my_bike
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'supertokens_user', '-d', 'supertokens']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:latest
+    depends_on:
+      supertokens-db:
+        condition: service_healthy
+    env_file: "supertokens.env"
+    networks:
+      - pump_my_bike
+    restart: unless-stopped
+    healthcheck:
+      test: >
+        bash -c 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  pump_my_bike:
+    driver: bridge
