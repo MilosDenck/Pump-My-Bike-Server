@@ -93,20 +93,15 @@ The backend server should now be running and accessible, typically on `http://lo
 | `POST` | `/auth/signin`      | Login User                             | No             |
 | `GET`  | `/locations`      | get Pumps in your location                | No             |
 
+## Related Project
 
-	
+[Pump My Bike (ios App)](https://github.com/MilosDenck/Pump-my-Bike)
+*The companion iOS application that consumes this backend API.
 
-
-	
-
-
-Related Project
-
-    Pump My Bike (iOS App) - The companion iOS application that consumes this backend API.
-
-Contributing
+## Contributing
 
 Contributions are welcome! If you have suggestions or find bugs, please open an issue or submit a pull request.
-License
 
-This project is licensed under the MIT License - see the LICENSE.md file for details. (Make sure you have a LICENSE.md file in your repo)
+## License
+
+All code is the property of Milos Denck. Feel free to be inspired by my code.
